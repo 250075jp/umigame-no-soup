@@ -1,0 +1,214 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .wrap { font-family: var(--font-sans); padding: 1rem 0; display: flex; flex-direction: column; gap: 2.5rem; }
+  .screen-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.05em; }
+  .phone { background: #1a1610; border-radius: 20px; overflow: hidden; border: 0.5px solid #3d3020; width: 100%; max-width: 360px; margin: 0 auto; }
+  .status-bar { background: #1a1610; padding: 10px 16px 6px; display: flex; justify-content: space-between; font-size: 11px; color: #7a6a4a; }
+  /* Title Screen */
+  .title-screen { padding: 40px 24px 32px; display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 480px; justify-content: center; }
+  .title-icon { font-size: 48px; color: #c49a3a; }
+  .title-main { font-size: 22px; font-weight: 500; color: #e8d5a0; text-align: center; line-height: 1.3; }
+  .title-sub { font-size: 13px; color: #7a6a4a; text-align: center; }
+  .btn-primary { background: #c49a3a; color: #1a1610; border: none; border-radius: 10px; padding: 14px 0; font-size: 15px; font-weight: 500; width: 100%; cursor: pointer; }
+  .btn-secondary { background: transparent; color: #c49a3a; border: 1px solid #3d3020; border-radius: 10px; padding: 12px 0; font-size: 14px; width: 100%; cursor: pointer; }
+  .divider-text { font-size: 12px; color: #4a3f2a; display: flex; align-items: center; gap: 8px; width: 100%; }
+  .divider-text::before, .divider-text::after { content: ''; flex: 1; height: 0.5px; background: #3d3020; }
+  /* Game Screen */
+  .game-header { background: #1a1610; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid #3d3020; }
+  .game-badge { background: #2a1f0a; color: #c49a3a; font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 0.5px solid #3d3020; }
+  .problem-box { background: #221c0e; margin: 16px; border-radius: 12px; padding: 16px; border: 0.5px solid #3d3020; }
+  .problem-label { font-size: 11px; color: #7a6a4a; margin-bottom: 8px; }
+  .problem-text { font-size: 14px; color: #e8d5a0; line-height: 1.7; }
+  .chat-area { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; min-height: 160px; }
+  .msg-user { align-self: flex-end; background: #2a1f0a; border: 0.5px solid #3d3020; border-radius: 14px 14px 2px 14px; padding: 10px 14px; font-size: 13px; color: #e8d5a0; max-width: 80%; }
+  .msg-ai { align-self: flex-start; max-width: 80%; }
+  .msg-ai-badge { display: inline-block; background: #1d3020; border: 0.5px solid #2d5030; border-radius: 20px; padding: 8px 16px; font-size: 14px; font-weight: 500; color: #5db870; }
+  .msg-ai-no { background: #301a1a; border-color: #5a2020; color: #e05050; }
+  .msg-ai-irr { background: #1a2030; border-color: #203050; color: #6090c0; }
+  .input-row { margin: 12px 16px 16px; display: flex; gap: 8px; }
+  .input-field { flex: 1; background: #221c0e; border: 0.5px solid #3d3020; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #e8d5a0; }
+  .send-btn { background: #c49a3a; border: none; border-radius: 10px; padding: 10px 14px; color: #1a1610; font-size: 16px; cursor: pointer; }
+  .hint-bar { margin: 0 16px 8px; background: #1a2030; border: 0.5px solid #203050; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #6090c0; display: flex; align-items: center; gap: 6px; }
+  /* Clear Screen */
+  .clear-screen { padding: 32px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; min-height: 480px; justify-content: center; }
+  .clear-icon { font-size: 40px; color: #c49a3a; }
+  .clear-title { font-size: 20px; font-weight: 500; color: #e8d5a0; }
+  .truth-box { background: #221c0e; border: 0.5px solid #3d3020; border-radius: 12px; padding: 16px; width: 100%; }
+  .truth-label { font-size: 11px; color: #7a6a4a; margin-bottom: 8px; }
+  .truth-text { font-size: 13px; color: #c8b880; line-height: 1.7; }
+  .stats-row { display: flex; gap: 12px; width: 100%; }
+  .stat-card { flex: 1; background: #221c0e; border: 0.5px solid #3d3020; border-radius: 10px; padding: 10px; text-align: center; }
+  .stat-num { font-size: 20px; font-weight: 500; color: #c49a3a; }
+  .stat-lbl { font-size: 11px; color: #7a6a4a; margin-top: 2px; }
+  /* Post Screen */
+  .post-header { background: #1a1610; padding: 12px 16px; border-bottom: 0.5px solid #3d3020; }
+  .post-title { font-size: 15px; font-weight: 500; color: #e8d5a0; }
+  .post-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .field-label { font-size: 12px; color: #7a6a4a; margin-bottom: 4px; }
+  .field-input { background: #221c0e; border: 0.5px solid #3d3020; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #e8d5a0; width: 100%; }
+  .field-textarea { background: #221c0e; border: 0.5px solid #3d3020; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #e8d5a0; width: 100%; min-height: 80px; resize: none; }
+  .field-note { font-size: 11px; color: #4a3f2a; margin-top: 4px; }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { background: #2a1f0a; border: 0.5px solid #3d3020; border-radius: 20px; padding: 5px 12px; font-size: 12px; color: #7a6a4a; cursor: pointer; }
+  .tag.active { background: #2a1f0a; border-color: #c49a3a; color: #c49a3a; }
+  /* Problem List */
+  .list-header { background: #1a1610; padding: 12px 16px; border-bottom: 0.5px solid #3d3020; display: flex; align-items: center; justify-content: space-between; }
+  .list-title { font-size: 15px; font-weight: 500; color: #e8d5a0; }
+  .list-new { font-size: 12px; color: #c49a3a; }
+  .problem-card { margin: 0 16px; border: 0.5px solid #3d3020; border-radius: 12px; padding: 14px; background: #221c0e; margin-bottom: 10px; }
+  .problem-card:first-of-type { margin-top: 16px; }
+  .card-title { font-size: 14px; color: #e8d5a0; font-weight: 500; margin-bottom: 6px; }
+  .card-meta { display: flex; gap: 8px; align-items: center; }
+  .card-tag { font-size: 11px; color: #7a6a4a; background: #2a1f0a; padding: 3px 8px; border-radius: 10px; }
+  .card-arrow { color: #4a3f2a; font-size: 14px; margin-left: auto; }
+  .section-head { font-size: 11px; color: #4a3f2a; padding: 12px 16px 4px; letter-spacing: 0.08em; }
+</style>
+
+<div class="wrap">
+
+  <div>
+    <div class="screen-label">① タイトル画面</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="title-screen">
+        <i class="ti ti-fish title-icon" aria-hidden="true"></i>
+        <div class="title-main">AI 海亀のスープ</div>
+        <div class="title-sub">いつでも1人で遊べる無限の水平思考パズル</div>
+        <div style="height:8px"></div>
+        <button class="btn-primary">今日の問題を解く</button>
+        <div class="divider-text">または</div>
+        <button class="btn-secondary">問題を投稿する</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="screen-label">② ゲーム画面（チャットUI）</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="game-header">
+        <i class="ti ti-arrow-left" style="color:#7a6a4a;font-size:18px" aria-hidden="true"></i>
+        <div class="game-badge">問題 #042</div>
+        <i class="ti ti-bulb" style="color:#c49a3a;font-size:18px" aria-hidden="true"></i>
+      </div>
+      <div class="problem-box">
+        <div class="problem-label">問題</div>
+        <div class="problem-text">ある男が、レストランで「海亀のスープ」を注文した。一口飲んだ彼は、料理人を呼び、勘定を払って家に帰り、自殺した。なぜか？</div>
+      </div>
+      <div class="chat-area">
+        <div class="msg-user">その男は以前も海亀のスープを飲んだことがありますか？</div>
+        <div class="msg-ai"><div class="msg-ai-badge">はい</div></div>
+        <div class="msg-user">本物のスープではなかった？</div>
+        <div class="msg-ai"><div class="msg-ai-badge msg-ai-no">いいえ</div></div>
+      </div>
+      <div class="hint-bar">
+        <i class="ti ti-bulb" style="font-size:14px" aria-hidden="true"></i>
+        「以前どこで飲んだか」について質問してみましょう
+      </div>
+      <div class="input-row">
+        <input class="input-field" placeholder="質問を入力…" readonly>
+        <button class="send-btn"><i class="ti ti-send" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="screen-label">③ 正解・解説画面</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="clear-screen">
+        <i class="ti ti-circle-check clear-icon" aria-hidden="true"></i>
+        <div class="clear-title">正解！</div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-num">23</div><div class="stat-lbl">質問数</div></div>
+          <div class="stat-card"><div class="stat-num">14分</div><div class="stat-lbl">クリア時間</div></div>
+          <div class="stat-card"><div class="stat-num">★★★</div><div class="stat-lbl">難易度</div></div>
+        </div>
+        <div class="truth-box">
+          <div class="truth-label">真相</div>
+          <div class="truth-text">男はかつて無人島で遭難し、仲間から「海亀のスープ」と言われて飲んだスープがあった。しかし今日本物を飲み、あの味とは全く違うと気づいた。仲間が何を材料にしたのかを悟り、絶望して帰宅した。</div>
+        </div>
+        <button class="btn-primary">次の問題へ</button>
+        <button class="btn-secondary">問題一覧に戻る</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="screen-label">④ 問題投稿画面</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="post-header">
+        <div class="post-title">真相を投稿する</div>
+      </div>
+      <div class="post-body">
+        <div>
+          <div class="field-label">真相（ネタバレ）</div>
+          <textarea class="field-textarea" placeholder="答えとなる真相を書いてください。AIが問題文を自動生成します。" readonly></textarea>
+          <div class="field-note">問題文はAIが自動で生成します</div>
+        </div>
+        <div>
+          <div class="field-label">難易度</div>
+          <div class="tag-row">
+            <div class="tag">やさしい</div>
+            <div class="tag active">ふつう</div>
+            <div class="tag">むずかしい</div>
+          </div>
+        </div>
+        <div>
+          <div class="field-label">タグ</div>
+          <div class="tag-row">
+            <div class="tag active">ホラー</div>
+            <div class="tag">日常</div>
+            <div class="tag">歴史</div>
+            <div class="tag">ミステリー</div>
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:4px">投稿してAIに問題を作らせる</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="screen-label">⑤ 問題一覧画面</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="list-header">
+        <div class="list-title">問題一覧</div>
+        <div class="list-new">+ 投稿する</div>
+      </div>
+      <div class="section-head">人気の問題</div>
+      <div class="problem-card">
+        <div class="card-title">ある男がレストランで「海亀のスープ」を…</div>
+        <div class="card-meta">
+          <div class="card-tag">ホラー</div>
+          <div class="card-tag">★★★</div>
+          <div class="card-tag">2.4k プレイ</div>
+          <div class="card-arrow"><i class="ti ti-chevron-right" aria-hidden="true"></i></div>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div class="card-title">エレベーターで12階まで行けない男の話</div>
+        <div class="card-meta">
+          <div class="card-tag">日常</div>
+          <div class="card-tag">★★</div>
+          <div class="card-tag">1.8k プレイ</div>
+          <div class="card-arrow"><i class="ti ti-chevron-right" aria-hidden="true"></i></div>
+        </div>
+      </div>
+      <div class="section-head" style="margin-top:4px">新着</div>
+      <div class="problem-card">
+        <div class="card-title">朝、ニュースを見た女が泣き崩れた理由</div>
+        <div class="card-meta">
+          <div class="card-tag">ミステリー</div>
+          <div class="card-tag">★★</div>
+          <div class="card-tag">新着</div>
+          <div class="card-arrow"><i class="ti ti-chevron-right" aria-hidden="true"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
