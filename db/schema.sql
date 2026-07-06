@@ -28,7 +28,7 @@ CREATE TABLE problems (
 -- プレイ履歴テーブル
 CREATE TABLE plays (
   id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id         INT UNSIGNED NOT NULL,
+  user_id         INT UNSIGNED,
   problem_id      INT UNSIGNED,
   question_count  INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '質問した回数',
   clear_time_sec  INT UNSIGNED          DEFAULT NULL COMMENT 'クリアにかかった時間（秒）',
