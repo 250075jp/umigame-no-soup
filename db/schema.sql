@@ -20,7 +20,7 @@ CREATE TABLE problems (
   story          TEXT         NOT NULL COMMENT 'ユーザーが入力した真相',
   question_text  TEXT         NOT NULL COMMENT 'AIが自動生成した問題文',
   difficulty     ENUM('easy', 'normal', 'hard') NOT NULL DEFAULT 'normal',
-  tag            VARCHAR(50) NOT NULL,
+  tag            ENUM('horror','mystery','suspense','fantasy','sf','history','romance','youth','daily','school','work','travel','food','sports','true_story') NOT NULL,
   created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
