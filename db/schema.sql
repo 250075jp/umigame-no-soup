@@ -20,9 +20,16 @@ CREATE TABLE problems (
   story          TEXT         NOT NULL COMMENT 'ユーザーが入力した真相',
   question_text  TEXT         NOT NULL COMMENT 'AIが自動生成した問題文',
   difficulty     ENUM('easy', 'normal', 'hard') NOT NULL DEFAULT 'normal',
-  tag            ENUM('horror','mystery','suspense','fantasy','sf','history','romance','youth','daily','school','work','travel','food','sports','true_story') NOT NULL,
   created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- 問題タグテーブル（1つの問題に最大3つのタグを持たせるための中間テーブル）
+CREATE TABLE problem_tags (
+  problem_id  INT UNSIGNED NOT NULL,
+  tag         ENUM('horror','mystery','suspense','fantasy','sf','history','romance','youth','daily','school','work','travel','food','sports','true_story') NOT NULL,
+  PRIMARY KEY (problem_id, tag),
+  FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE
 );
 
 -- プレイ履歴テーブル
