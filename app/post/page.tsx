@@ -5,29 +5,12 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { IconArrowLeft, IconHome } from "@tabler/icons-react";
 import { createProblem } from "./actions";
+import { TAGS } from "@/lib/tags";
 
 const DIFFICULTIES = [
   { value: "easy", label: "やさしい" },
   { value: "normal", label: "ふつう" },
   { value: "hard", label: "むずかしい" },
-];
-
-const TAGS = [
-  { value: "horror", label: "ホラー" },
-  { value: "mystery", label: "ミステリー" },
-  { value: "suspense", label: "サスペンス" },
-  { value: "fantasy", label: "ファンタジー" },
-  { value: "sf", label: "SF" },
-  { value: "history", label: "歴史" },
-  { value: "romance", label: "恋愛" },
-  { value: "youth", label: "青春" },
-  { value: "daily", label: "日常" },
-  { value: "school", label: "学校" },
-  { value: "work", label: "仕事" },
-  { value: "travel", label: "旅行" },
-  { value: "food", label: "グルメ" },
-  { value: "sports", label: "スポーツ" },
-  { value: "true_story", label: "実話" },
 ];
 
 const MAX_TAGS = 3;

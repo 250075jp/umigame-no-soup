@@ -1,85 +1,67 @@
 import Link from "next/link";
-import {
-  IconChevronRight,
-  IconCircleCheckFilled,
-  IconHome,
-} from "@tabler/icons-react";
+import { IconChevronRight, IconHome } from "@tabler/icons-react";
+import pool from "@/lib/db";
+import { tagLabel } from "@/lib/tags";
+import { getDifficultyStars } from "@/lib/gameRules";
 import RandomPlayButton from "./RandomPlayButton";
 
-type Problem = {
+type ProblemRow = {
   id: number;
-  title: string;
-  tag: string;
-  difficulty: number;
-  plays: number;
-  cleared: boolean;
+  question_text: string;
+  difficulty: string;
+  tags: string | null;
+  play_count: number;
 };
 
-const PROBLEMS: Problem[] = [
-  {
-    id: 1,
-    title: 'ある男がレストランで「海亀のスープ」を…',
-    tag: "ホラー",
-    difficulty: 3,
-    plays: 2400,
-    cleared: true,
-  },
-  {
-    id: 2,
-    title: "エレベーターで12階まで行けない男の話",
-    tag: "日常",
-    difficulty: 2,
-    plays: 1800,
-    cleared: false,
-  },
-  {
-    id: 3,
-    title: "朝、ニュースを見た女が泣き崩れた理由",
-    tag: "ミステリー",
-    difficulty: 2,
-    plays: 320,
-    cleared: false,
-  },
-];
-
-function formatPlays(plays: number) {
-  return plays >= 1000
-    ? `${(plays / 1000).toFixed(1)}k プレイ`
-    : `${plays} プレイ`;
+async function getProblems(): Promise<ProblemRow[]> {
+  const [rows] = await pool.query(`
+    SELECT p.id, p.question_text, p.difficulty,
+           GROUP_CONCAT(DISTINCT pt.tag) AS tags,
+           COUNT(DISTINCT pl.id) AS play_count
+    FROM problems p
+    LEFT JOIN problem_tags pt ON pt.problem_id = p.id
+    LEFT JOIN plays pl ON pl.problem_id = p.id
+    GROUP BY p.id
+    ORDER BY play_count DESC, p.created_at DESC
+  `);
+  return rows as ProblemRow[];
 }
 
-function ProblemCard({ problem }: { problem: Problem }) {
+function ProblemCard({ problem }: { problem: ProblemRow }) {
+  const tags = problem.tags ? problem.tags.split(",").slice(0, 2) : [];
+
   return (
     <Link
       href={`/play/${problem.id}`}
       className="block rounded-xl border border-[#3d3020] bg-[#221c0e] p-3.5"
     >
-      <div className="mb-1.5 flex items-center gap-2 text-sm font-medium text-[#e8d5a0]">
-        {problem.cleared && (
-          <IconCircleCheckFilled
-            className="h-4 w-4 shrink-0 text-[#5db870]"
-            aria-label="クリア済み"
-          />
-        )}
-        <span>{problem.title}</span>
+      <div className="mb-1.5 text-sm font-medium text-[#e8d5a0]">
+        {problem.question_text}
       </div>
       <div className="flex items-center gap-2">
+        {tags.map((t) => (
+          <span
+            key={t}
+            className="rounded-[10px] bg-[#2a1f0a] px-2 py-0.5 text-[11px] text-[#7a6a4a]"
+          >
+            {tagLabel(t)}
+          </span>
+        ))}
         <span className="rounded-[10px] bg-[#2a1f0a] px-2 py-0.5 text-[11px] text-[#7a6a4a]">
-          {problem.tag}
+          {"★".repeat(getDifficultyStars(problem.difficulty))}
         </span>
         <span className="rounded-[10px] bg-[#2a1f0a] px-2 py-0.5 text-[11px] text-[#7a6a4a]">
-          {"★".repeat(problem.difficulty)}
+          {problem.play_count} プレイ
         </span>
-        <span className="rounded-[10px] bg-[#2a1f0a] px-2 py-0.5 text-[11px] text-[#7a6a4a]">
-          {formatPlays(problem.plays)}
-        </span>
-        <IconChevronRight className="ml-auto h-3.5 w-3.5 text-[#4a3f2a]" />
+        <IconChevronRight className="ml-auto h-3.5 w-3.5 shrink-0 text-[#4a3f2a]" />
       </div>
     </Link>
   );
 }
 
-export default function ProblemsPage() {
+export default async function ProblemsPage() {
+  const problems = await getProblems();
+
   return (
     <div className="flex h-dvh flex-col">
       <header className="flex shrink-0 items-center justify-between border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
@@ -95,11 +77,18 @@ export default function ProblemsPage() {
       </header>
 
       <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
-        <RandomPlayButton ids={PROBLEMS.map((p) => p.id)} />
-
-        {PROBLEMS.map((p) => (
-          <ProblemCard key={p.id} problem={p} />
-        ))}
+        {problems.length === 0 ? (
+          <p className="mt-4 text-center text-sm text-[#7a6a4a]">
+            まだ問題がありません。投稿してみましょう。
+          </p>
+        ) : (
+          <>
+            <RandomPlayButton ids={problems.map((p) => p.id)} />
+            {problems.map((p) => (
+              <ProblemCard key={p.id} problem={p} />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

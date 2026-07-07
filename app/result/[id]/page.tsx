@@ -2,12 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { IconCircleCheck, IconHome } from "@tabler/icons-react";
 import pool from "@/lib/db";
-
-const DIFFICULTY_STARS: Record<string, number> = {
-  easy: 1,
-  normal: 2,
-  hard: 3,
-};
+import { getDifficultyStars } from "@/lib/gameRules";
 
 function formatTime(sec: number) {
   if (sec < 60) return `${sec}秒`;
@@ -82,7 +77,7 @@ export default async function ResultPage(
           </div>
           <div className="flex-1 rounded-[10px] border border-[#3d3020] bg-[#221c0e] p-2.5 text-center">
             <div className="text-xl font-medium text-[#c49a3a]">
-              {"★".repeat(DIFFICULTY_STARS[problem.difficulty] ?? 2)}
+              {"★".repeat(getDifficultyStars(problem.difficulty))}
             </div>
             <div className="mt-0.5 text-[11px] text-[#7a6a4a]">難易度</div>
           </div>
