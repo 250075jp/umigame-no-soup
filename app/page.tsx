@@ -33,6 +33,19 @@ export default function Home() {
             問題一覧を見る
           </Link>
         </div>
+
+        <div className="mt-2 flex w-full items-center gap-3 text-[#3d3020]">
+          <div className="h-px flex-1 bg-[#3d3020]" />
+          <span className="text-xs text-[#4a3f2a]">または</span>
+          <div className="h-px flex-1 bg-[#3d3020]" />
+        </div>
+
+        <button
+          type="button"
+          className="w-full rounded-[10px] border border-[#3d3020] py-3 text-sm text-[#7a6a4a]"
+        >
+          ログアウト
+        </button>
       </div>
     </div>
   );

@@ -1,17 +1,23 @@
 import Link from "next/link";
-import { IconCircleCheck } from "@tabler/icons-react";
+import { IconCircleCheck, IconHome } from "@tabler/icons-react";
 
 export default async function ResultPage(props: PageProps<"/result/[id]">) {
   const { id } = await props.params;
   const nextId = Number(id) + 1;
 
   return (
-    <div className="flex h-dvh flex-col items-center justify-center gap-4 px-6 py-8">
-      <div className="flex w-full max-w-sm flex-col items-center gap-4 text-center">
-        <IconCircleCheck className="h-10 w-10 text-[#c49a3a]" stroke={1.5} />
+    <div className="flex h-dvh flex-col">
+      <header className="flex shrink-0 items-center border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
+        <Link href="/" className="text-[#7a6a4a]">
+          <IconHome className="h-5 w-5" stroke={1.5} />
+        </Link>
+      </header>
+
+      <div className="flex flex-1 flex-col items-center gap-4 overflow-y-auto p-6 text-center">
+        <IconCircleCheck className="mt-2 h-10 w-10 text-[#c49a3a]" stroke={1.5} />
         <h1 className="text-xl font-medium text-[#e8d5a0]">正解！</h1>
 
-        <div className="flex w-full gap-3">
+        <div className="flex w-full max-w-sm gap-3">
           <div className="flex-1 rounded-[10px] border border-[#3d3020] bg-[#221c0e] p-2.5 text-center">
             <div className="text-xl font-medium text-[#c49a3a]">23</div>
             <div className="mt-0.5 text-[11px] text-[#7a6a4a]">質問数</div>
@@ -26,27 +32,27 @@ export default async function ResultPage(props: PageProps<"/result/[id]">) {
           </div>
         </div>
 
-        <div className="w-full rounded-xl border border-[#3d3020] bg-[#221c0e] p-4 text-left">
+        <div className="w-full max-w-sm rounded-xl border border-[#3d3020] bg-[#221c0e] p-4 text-left">
           <div className="mb-2 text-[11px] text-[#7a6a4a]">真相</div>
           <p className="text-[13px] leading-7 text-[#c8b880]">
             男はかつて無人島で遭難し、仲間から「海亀のスープ」と言われて飲んだスープがあった。しかし今日本物を飲み、あの味とは全く違うと気づいた。仲間が何を材料にしたのかを悟り、絶望して帰宅した。
           </p>
         </div>
+      </div>
 
-        <div className="mt-2 flex w-full flex-col gap-3">
-          <Link
-            href={`/play/${nextId}`}
-            className="w-full rounded-[10px] bg-[#c49a3a] py-3.5 text-[15px] font-medium text-[#1a1610]"
-          >
-            次の問題へ
-          </Link>
-          <Link
-            href="/problems"
-            className="w-full rounded-[10px] border border-[#3d3020] py-3 text-center text-sm text-[#c49a3a]"
-          >
-            問題一覧に戻る
-          </Link>
-        </div>
+      <div className="mx-auto flex w-full max-w-sm shrink-0 flex-col gap-3 p-4">
+        <Link
+          href={`/play/${nextId}`}
+          className="w-full rounded-[10px] bg-[#c49a3a] py-3.5 text-center text-[15px] font-medium text-[#1a1610]"
+        >
+          次の問題へ
+        </Link>
+        <Link
+          href="/problems"
+          className="w-full rounded-[10px] border border-[#3d3020] py-3 text-center text-sm text-[#c49a3a]"
+        >
+          問題一覧に戻る
+        </Link>
       </div>
     </div>
   );

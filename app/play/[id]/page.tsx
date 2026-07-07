@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IconArrowLeft, IconBulb, IconSend2 } from "@tabler/icons-react";
+import { IconArrowLeft, IconBulb, IconHome, IconSend2 } from "@tabler/icons-react";
 
 export default async function PlayPage(props: PageProps<"/play/[id]">) {
   const { id } = await props.params;
@@ -7,9 +7,14 @@ export default async function PlayPage(props: PageProps<"/play/[id]">) {
   return (
     <div className="flex h-dvh flex-col">
       <header className="flex shrink-0 items-center justify-between border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
-        <Link href="/" className="text-[#7a6a4a]">
-          <IconArrowLeft className="h-5 w-5" stroke={1.5} />
-        </Link>
+        <div className="flex items-center gap-3 text-[#7a6a4a]">
+          <Link href="/problems">
+            <IconArrowLeft className="h-5 w-5" stroke={1.5} />
+          </Link>
+          <Link href="/">
+            <IconHome className="h-5 w-5" stroke={1.5} />
+          </Link>
+        </div>
         <div className="rounded-full border border-[#3d3020] bg-[#2a1f0a] px-3 py-1 text-xs text-[#c49a3a]">
           問題 #{id}
         </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft, IconHome } from "@tabler/icons-react";
 
 const DIFFICULTIES = [
   { value: "easy", label: "やさしい" },
@@ -44,13 +44,18 @@ export default function PostPage() {
 
   return (
     <div className="flex h-dvh flex-col">
-      <header className="flex shrink-0 items-center gap-3 border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
+      <header className="flex shrink-0 items-center justify-between border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
+        <div className="flex items-center gap-3">
+          <Link href="/problems" className="text-[#7a6a4a]">
+            <IconArrowLeft className="h-5 w-5" stroke={1.5} />
+          </Link>
+          <h1 className="text-[15px] font-medium text-[#e8d5a0]">
+            真相を投稿する
+          </h1>
+        </div>
         <Link href="/" className="text-[#7a6a4a]">
-          <IconArrowLeft className="h-5 w-5" stroke={1.5} />
+          <IconHome className="h-5 w-5" stroke={1.5} />
         </Link>
-        <h1 className="text-[15px] font-medium text-[#e8d5a0]">
-          真相を投稿する
-        </h1>
       </header>
 
       <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-4">
