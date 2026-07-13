@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Type } from "@google/genai";
 import pool from "@/lib/db";
 import ai, { isMockAI } from "@/lib/gemini";
+import { getCurrentUser } from "@/lib/auth";
 
 export type ChatMessage = {
   role: "user" | "ai";
@@ -158,9 +159,10 @@ export async function finishPlay(
   clearTimeSec: number,
   cleared: boolean
 ) {
+  const user = await getCurrentUser();
   const [result] = await pool.query(
-    "INSERT INTO plays (user_id, problem_id, question_count, clear_time_sec, is_cleared) VALUES (NULL, ?, ?, ?, ?)",
-    [problemId, questionCount, clearTimeSec, cleared ? 1 : 0]
+    "INSERT INTO plays (user_id, problem_id, question_count, clear_time_sec, is_cleared) VALUES (?, ?, ?, ?, ?)",
+    [user?.id ?? null, problemId, questionCount, clearTimeSec, cleared ? 1 : 0]
   );
   const playId = (result as { insertId: number }).insertId;
   redirect(`/result/${problemId}?playId=${playId}`);

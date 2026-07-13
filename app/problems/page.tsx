@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { IconChevronRight, IconHome } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconCircleCheckFilled,
+  IconHome,
+} from "@tabler/icons-react";
 import pool from "@/lib/db";
 import { tagLabel } from "@/lib/tags";
 import { getDifficultyStars } from "@/lib/gameRules";
+import { getCurrentUser } from "@/lib/auth";
 import RandomPlayButton from "./RandomPlayButton";
 
 type ProblemRow = {
@@ -11,19 +16,27 @@ type ProblemRow = {
   difficulty: string;
   tags: string | null;
   play_count: number;
+  cleared_by_me: number;
 };
 
-async function getProblems(): Promise<ProblemRow[]> {
-  const [rows] = await pool.query(`
+async function getProblems(userId: number | null): Promise<ProblemRow[]> {
+  const [rows] = await pool.query(
+    `
     SELECT p.id, p.question_text, p.difficulty,
            GROUP_CONCAT(DISTINCT pt.tag) AS tags,
-           COUNT(DISTINCT pl.id) AS play_count
+           COUNT(DISTINCT pl.id) AS play_count,
+           EXISTS(
+             SELECT 1 FROM plays mp
+             WHERE mp.problem_id = p.id AND mp.user_id = ? AND mp.is_cleared = 1
+           ) AS cleared_by_me
     FROM problems p
     LEFT JOIN problem_tags pt ON pt.problem_id = p.id
     LEFT JOIN plays pl ON pl.problem_id = p.id
     GROUP BY p.id
     ORDER BY play_count DESC, p.created_at DESC
-  `);
+  `,
+    [userId]
+  );
   return rows as ProblemRow[];
 }
 
@@ -35,8 +48,14 @@ function ProblemCard({ problem }: { problem: ProblemRow }) {
       href={`/play/${problem.id}`}
       className="block rounded-xl border border-[#3d3020] bg-[#221c0e] p-3.5"
     >
-      <div className="mb-1.5 text-sm font-medium text-[#e8d5a0]">
-        {problem.question_text}
+      <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-[#e8d5a0]">
+        {problem.cleared_by_me === 1 && (
+          <IconCircleCheckFilled
+            className="h-4 w-4 shrink-0 text-[#5db870]"
+            aria-label="クリア済み"
+          />
+        )}
+        <span>{problem.question_text}</span>
       </div>
       <div className="flex items-center gap-2">
         {tags.map((t) => (
@@ -60,7 +79,8 @@ function ProblemCard({ problem }: { problem: ProblemRow }) {
 }
 
 export default async function ProblemsPage() {
-  const problems = await getProblems();
+  const user = await getCurrentUser();
+  const problems = await getProblems(user?.id ?? null);
 
   return (
     <div className="flex h-dvh flex-col">

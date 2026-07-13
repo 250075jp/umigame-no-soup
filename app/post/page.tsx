@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useFormStatus } from "react-dom";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { IconArrowLeft, IconHome } from "@tabler/icons-react";
 import { createProblem } from "./actions";
@@ -15,22 +14,10 @@ const DIFFICULTIES = [
 
 const MAX_TAGS = 3;
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="w-full rounded-[10px] bg-[#c49a3a] py-3.5 text-[15px] font-medium text-[#1a1610] disabled:opacity-60"
-    >
-      {pending ? "AIが問題文を生成中…" : "投稿してAIに問題を作らせる"}
-    </button>
-  );
-}
-
 export default function PostPage() {
   const [difficulty, setDifficulty] = useState("normal");
   const [tags, setTags] = useState<string[]>([]);
+  const [state, formAction, pending] = useActionState(createProblem, {});
 
   const toggleTag = (value: string) => {
     setTags((prev) => {
@@ -41,7 +28,7 @@ export default function PostPage() {
   };
 
   return (
-    <form action={createProblem} className="flex h-dvh flex-col">
+    <form action={formAction} className="flex h-dvh flex-col">
       <header className="flex shrink-0 items-center justify-between border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
         <div className="flex items-center gap-3">
           <Link href="/problems" className="text-[#7a6a4a]">
@@ -129,7 +116,16 @@ export default function PostPage() {
       ))}
 
       <div className="shrink-0 border-t border-[#3d3020] bg-[#1a1610] p-4">
-        <SubmitButton />
+        {state?.error && (
+          <p className="mb-2 text-xs text-[#e05050]">{state.error}</p>
+        )}
+        <button
+          type="submit"
+          disabled={pending}
+          className="w-full rounded-[10px] bg-[#c49a3a] py-3.5 text-[15px] font-medium text-[#1a1610] disabled:opacity-60"
+        >
+          {pending ? "AIが問題文を生成中…" : "投稿してAIに問題を作らせる"}
+        </button>
       </div>
     </form>
   );

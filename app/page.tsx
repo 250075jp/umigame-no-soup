@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { IconFish } from "@tabler/icons-react";
+import { getCurrentUser } from "@/lib/auth";
+import { logout } from "@/app/logout/actions";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="flex w-full max-w-sm flex-col items-center gap-4 text-center">
@@ -40,12 +44,28 @@ export default function Home() {
           <div className="h-px flex-1 bg-[#3d3020]" />
         </div>
 
-        <button
-          type="button"
-          className="w-full rounded-[10px] border border-[#3d3020] py-3 text-sm text-[#7a6a4a]"
-        >
-          ログアウト
-        </button>
+        {user ? (
+          <div className="flex w-full flex-col items-center gap-2">
+            <p className="text-xs text-[#7a6a4a]">
+              {user.name} としてログイン中
+            </p>
+            <form action={logout} className="w-full">
+              <button
+                type="submit"
+                className="w-full rounded-[10px] border border-[#3d3020] py-3 text-sm text-[#7a6a4a]"
+              >
+                ログアウト
+              </button>
+            </form>
+          </div>
+        ) : (
+          <Link
+            href="/login"
+            className="w-full rounded-[10px] border border-[#3d3020] py-3 text-center text-sm text-[#7a6a4a]"
+          >
+            ログイン / 新規登録
+          </Link>
+        )}
       </div>
     </div>
   );

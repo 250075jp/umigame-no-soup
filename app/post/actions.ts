@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Type } from "@google/genai";
 import pool from "@/lib/db";
 import ai, { isMockAI } from "@/lib/gemini";
+import { getCurrentUser } from "@/lib/auth";
 
 const MAX_TAGS = 3;
 
@@ -50,28 +51,40 @@ ${story}`,
   };
 }
 
-export async function createProblem(formData: FormData) {
+export type CreateProblemState = { error?: string };
+
+export async function createProblem(
+  _prevState: CreateProblemState,
+  formData: FormData
+): Promise<CreateProblemState> {
   const story = (formData.get("story") as string | null)?.trim();
   const difficulty = (formData.get("difficulty") as string | null) ?? "normal";
   const tags = formData.getAll("tags").map(String).slice(0, MAX_TAGS);
 
   if (!story) {
-    throw new Error("真相を入力してください");
+    return { error: "真相を入力してください" };
   }
 
-  const { questionText, keyPoints } = await generateProblemContent(story);
+  let problemId: number;
+  try {
+    const user = await getCurrentUser();
+    const { questionText, keyPoints } = await generateProblemContent(story);
 
-  const [result] = await pool.query(
-    "INSERT INTO problems (user_id, story, question_text, key_points, difficulty) VALUES (NULL, ?, ?, ?, ?)",
-    [story, questionText, JSON.stringify(keyPoints), difficulty]
-  );
-  const problemId = (result as { insertId: number }).insertId;
-
-  for (const tag of tags) {
-    await pool.query(
-      "INSERT INTO problem_tags (problem_id, tag) VALUES (?, ?)",
-      [problemId, tag]
+    const [result] = await pool.query(
+      "INSERT INTO problems (user_id, story, question_text, key_points, difficulty) VALUES (?, ?, ?, ?, ?)",
+      [user?.id ?? null, story, questionText, JSON.stringify(keyPoints), difficulty]
     );
+    problemId = (result as { insertId: number }).insertId;
+
+    for (const tag of tags) {
+      await pool.query(
+        "INSERT INTO problem_tags (problem_id, tag) VALUES (?, ?)",
+        [problemId, tag]
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    return { error: "問題の生成に失敗しました。もう一度お試しください。" };
   }
 
   redirect(`/play/${problemId}`);
