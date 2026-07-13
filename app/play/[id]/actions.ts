@@ -16,12 +16,61 @@ export async function askQuestion(
   story: string,
   history: ChatMessage[],
   message: string
-): Promise<{ answer: "yes" | "no" | "irrelevant"; solved: boolean }> {
+): Promise<{ answer: "yes" | "no" | "irrelevant" }> {
   if (isMockAI) {
     const answers = ["yes", "no", "irrelevant"] as const;
+    return { answer: answers[Math.floor(Math.random() * answers.length)] };
+  }
+
+  const historyText = history
+    .map((m) => (m.role === "user" ? `質問: ${m.text}` : `回答: ${m.text}`))
+    .join("\n");
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: `あなたは「ウミガメのスープ」のゲームマスターです。以下の真相をもとに、プレイヤーの質問に答えてください。プレイヤーは真相を言い当てようとしているわけではなく、あくまでyes/noで答えられる質問をしています。
+
+問題文: ${questionText}
+真相（プレイヤーには非公開）: ${story}
+
+これまでのやり取り:
+${historyText || "（まだなし）"}
+
+プレイヤーの新しい質問: ${message}
+
+ルール:
+- 真相に照らして「はい」「いいえ」「関係ない」のいずれかで判定する
+- 曖昧な場合は「関係ない」を選ぶ`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          answer: { type: Type.STRING, enum: ["yes", "no", "irrelevant"] },
+        },
+        required: ["answer"],
+      },
+    },
+  });
+
+  const parsed = JSON.parse(response.text ?? "{}");
+  return { answer: parsed.answer as "yes" | "no" | "irrelevant" };
+}
+
+export async function submitAnswer(
+  questionText: string,
+  story: string,
+  keyPoints: string[],
+  history: ChatMessage[],
+  guess: string
+): Promise<{ correct: boolean; feedback: string }> {
+  if (isMockAI) {
+    const correct = guess.includes("正解");
     return {
-      answer: answers[Math.floor(Math.random() * answers.length)],
-      solved: message.includes("正解"),
+      correct,
+      feedback: correct
+        ? "（モック）正解です！"
+        : "（モック）まだ足りない要点があります。",
     };
   }
 
@@ -31,38 +80,38 @@ export async function askQuestion(
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    contents: `あなたは「ウミガメのスープ」のゲームマスターです。以下の真相をもとに、プレイヤーの発言に答えてください。
+    contents: `あなたは「ウミガメのスープ」のゲームマスターです。プレイヤーが真相を言い当てようとしています。以下の「採点基準」に照らして、プレイヤーの回答が正解かどうかを厳密に判定してください。
 
 問題文: ${questionText}
 真相（プレイヤーには非公開）: ${story}
 
+採点基準（この要点をすべて満たしていれば正解、1つでも欠けていたら不正解）:
+${keyPoints.map((k, i) => `${i + 1}. ${k}`).join("\n")}
+
 これまでのやり取り:
 ${historyText || "（まだなし）"}
 
-プレイヤーの新しい発言: ${message}
+プレイヤーの回答: ${guess}
 
 ルール:
-- プレイヤーの発言がyes/noで答えられる質問なら、真相に照らして「はい」「いいえ」「関係ない」のいずれかで判定する
-- プレイヤーの発言が、真相の核心（トリックや理由）を実質的に言い当てている場合は solved を true にする
-- 曖昧な場合は「関係ない」を選ぶ`,
+- 採点基準の要点をすべて満たしている場合のみ correct を true にする
+- 一部だけ合っている、方向性は近いが要点が欠けている場合は correct を false にする
+- feedbackには、正解なら短い称賛、不正解なら真相を明かさない範囲で「何が足りないか」のヒントを日本語で1〜2文で書く`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          answer: { type: Type.STRING, enum: ["yes", "no", "irrelevant"] },
-          solved: { type: Type.BOOLEAN },
+          correct: { type: Type.BOOLEAN },
+          feedback: { type: Type.STRING },
         },
-        required: ["answer", "solved"],
+        required: ["correct", "feedback"],
       },
     },
   });
 
   const parsed = JSON.parse(response.text ?? "{}");
-  return {
-    answer: parsed.answer as "yes" | "no" | "irrelevant",
-    solved: !!parsed.solved,
-  };
+  return { correct: !!parsed.correct, feedback: parsed.feedback as string };
 }
 
 export async function getHint(

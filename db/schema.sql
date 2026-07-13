@@ -19,6 +19,7 @@ CREATE TABLE problems (
   user_id        INT UNSIGNED,
   story          TEXT         NOT NULL COMMENT 'ユーザーが入力した真相',
   question_text  TEXT         NOT NULL COMMENT 'AIが自動生成した問題文',
+  key_points     TEXT         NOT NULL COMMENT '正解判定用の要点（AIが生成、JSON配列文字列）',
   difficulty     ENUM('easy', 'normal', 'hard') NOT NULL DEFAULT 'normal',
   created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
