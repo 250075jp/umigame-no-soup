@@ -59,7 +59,7 @@ export default async function ResultPage(
   const cleared = play ? play.is_cleared === 1 : true;
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="mx-auto flex h-dvh w-full max-w-sm flex-col">
       <header className="flex shrink-0 items-center border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
         <Link href="/" className="text-[#7a6a4a]">
           <IconHome className="h-5 w-5" stroke={1.5} />

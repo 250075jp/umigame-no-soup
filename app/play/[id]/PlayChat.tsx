@@ -138,7 +138,7 @@ export default function PlayChat({
   };
 
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="mx-auto flex h-dvh w-full max-w-sm flex-col">
       <header className="flex shrink-0 items-center justify-between border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
         <div className="flex items-center gap-3 text-[#7a6a4a]">
           <Link href="/problems">
