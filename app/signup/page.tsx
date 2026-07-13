@@ -55,6 +55,17 @@ export default function SignupPage() {
             placeholder="8文字以上"
           />
         </div>
+        <div>
+          <div className="mb-1 text-xs text-[#7a6a4a]">パスワード（確認）</div>
+          <input
+            name="passwordConfirm"
+            type="password"
+            required
+            minLength={8}
+            className="w-full rounded-[10px] border border-[#3d3020] bg-[#221c0e] px-3 py-2.5 text-[13px] text-[#e8d5a0] placeholder:text-[#4a3f2a]"
+            placeholder="もう一度入力してください"
+          />
+        </div>
         <Link href="/login" className="text-center text-xs text-[#c49a3a]">
           すでにアカウントをお持ちの方はこちら
         </Link>

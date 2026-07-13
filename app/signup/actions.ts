@@ -14,12 +14,16 @@ export async function signup(
   const name = (formData.get("name") as string | null)?.trim();
   const email = (formData.get("email") as string | null)?.trim().toLowerCase();
   const password = formData.get("password") as string | null;
+  const passwordConfirm = formData.get("passwordConfirm") as string | null;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !passwordConfirm) {
     return { error: "すべての項目を入力してください" };
   }
   if (password.length < 8) {
     return { error: "パスワードは8文字以上にしてください" };
+  }
+  if (password !== passwordConfirm) {
+    return { error: "パスワードが一致しません" };
   }
 
   const [existingRows] = await pool.query(
