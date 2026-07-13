@@ -3,11 +3,15 @@
 import { redirect } from "next/navigation";
 import { Type } from "@google/genai";
 import pool from "@/lib/db";
-import ai from "@/lib/gemini";
+import ai, { isMockAI } from "@/lib/gemini";
 
 const MAX_TAGS = 3;
 
 async function generateQuestionText(story: string) {
+  if (isMockAI) {
+    return `（モック問題文）${story.slice(0, 20)}…という出来事があった。一体何が起きたのか？`;
+  }
+
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: `あなたは「ウミガメのスープ」（水平思考パズル）の出題者です。

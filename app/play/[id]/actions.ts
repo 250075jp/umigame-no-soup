@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { Type } from "@google/genai";
 import pool from "@/lib/db";
-import ai from "@/lib/gemini";
+import ai, { isMockAI } from "@/lib/gemini";
 
 export type ChatMessage = {
   role: "user" | "ai";
@@ -17,6 +17,14 @@ export async function askQuestion(
   history: ChatMessage[],
   message: string
 ): Promise<{ answer: "yes" | "no" | "irrelevant"; solved: boolean }> {
+  if (isMockAI) {
+    const answers = ["yes", "no", "irrelevant"] as const;
+    return {
+      answer: answers[Math.floor(Math.random() * answers.length)],
+      solved: message.includes("正解"),
+    };
+  }
+
   const historyText = history
     .map((m) => (m.role === "user" ? `質問: ${m.text}` : `回答: ${m.text}`))
     .join("\n");
@@ -62,6 +70,10 @@ export async function getHint(
   story: string,
   history: ChatMessage[]
 ): Promise<string> {
+  if (isMockAI) {
+    return "（モックヒント）気になる部分をもう一度整理して質問してみましょう。";
+  }
+
   const historyText = history
     .map((m) => (m.role === "user" ? `質問: ${m.text}` : `回答: ${m.text}`))
     .join("\n");
