@@ -9,7 +9,12 @@ function formatTime(sec: number) {
   return `${Math.floor(sec / 60)}分${sec % 60}秒`;
 }
 
-type ProblemRow = { id: number; story: string; difficulty: string };
+type ProblemRow = {
+  id: number;
+  story: string;
+  key_points: string;
+  difficulty: string;
+};
 type PlayRow = {
   question_count: number;
   clear_time_sec: number | null;
@@ -23,11 +28,18 @@ export default async function ResultPage(
   const { playId } = await props.searchParams;
 
   const [problemRows] = await pool.query(
-    "SELECT id, story, difficulty FROM problems WHERE id = ?",
+    "SELECT id, story, key_points, difficulty FROM problems WHERE id = ?",
     [id]
   );
   const problem = (problemRows as ProblemRow[])[0];
   if (!problem) notFound();
+
+  let keyPoints: string[] = [];
+  try {
+    keyPoints = JSON.parse(problem.key_points);
+  } catch {
+    keyPoints = [];
+  }
 
   let play: PlayRow | null = null;
   if (playId) {
@@ -89,6 +101,17 @@ export default async function ResultPage(
             {problem.story}
           </p>
         </div>
+
+        {keyPoints.length > 0 && (
+          <div className="w-full max-w-sm rounded-xl border border-[#3d3020] bg-[#221c0e] p-4 text-left">
+            <div className="mb-2 text-[11px] text-[#7a6a4a]">正解の要点</div>
+            <ul className="list-inside list-disc space-y-1 text-[13px] leading-6 text-[#c8b880]">
+              {keyPoints.map((k, i) => (
+                <li key={i}>{k}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       <div className="mx-auto flex w-full max-w-sm shrink-0 flex-col gap-3 p-4">

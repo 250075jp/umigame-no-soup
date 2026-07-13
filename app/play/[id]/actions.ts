@@ -8,7 +8,7 @@ import ai, { isMockAI } from "@/lib/gemini";
 export type ChatMessage = {
   role: "user" | "ai";
   text: string;
-  kind?: "yes" | "no" | "irrelevant";
+  kind?: "yes" | "no" | "irrelevant" | "feedback";
 };
 
 export async function askQuestion(

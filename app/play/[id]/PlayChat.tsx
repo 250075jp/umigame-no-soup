@@ -6,6 +6,7 @@ import {
   IconArrowLeft,
   IconBulb,
   IconCheck,
+  IconFlag,
   IconHome,
   IconSend2,
 } from "@tabler/icons-react";
@@ -46,6 +47,8 @@ export default function PlayChat({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [hint, setHint] = useState<string | null>(null);
+  const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
+  const [answerText, setAnswerText] = useState("");
   const [isSending, startSending] = useTransition();
   const [isHintLoading, startHintLoading] = useTransition();
   const startTimeRef = useRef(Date.now());
@@ -83,10 +86,9 @@ export default function PlayChat({
     });
   };
 
-  const handleAnswer = () => {
-    const text = input.trim();
+  const handleAnswerSubmit = () => {
+    const text = answerText.trim();
     if (!text || isSending) return;
-    setInput("");
 
     startSending(async () => {
       const history = messages;
@@ -113,6 +115,8 @@ export default function PlayChat({
       };
       const nextMessages = [...history, userMessage, aiMessage];
       setMessages(nextMessages);
+      setAnswerText("");
+      setIsAnswerModalOpen(false);
       await checkLimit(nextMessages);
     });
   };
@@ -122,6 +126,14 @@ export default function PlayChat({
     startHintLoading(async () => {
       const text = await getHint(questionText, story, messages);
       setHint(text);
+    });
+  };
+
+  const handleGiveUp = () => {
+    if (isSending) return;
+    if (!window.confirm("本当にギブアップしますか？")) return;
+    startSending(async () => {
+      await finishPlay(problemId, questionCount, elapsedSeconds(), false);
     });
   };
 
@@ -139,14 +151,26 @@ export default function PlayChat({
         <div className="rounded-full border border-[#3d3020] bg-[#2a1f0a] px-3 py-1 text-xs text-[#c49a3a]">
           問題 #{problemId}（{questionCount} / {questionLimit}）
         </div>
-        <button
-          type="button"
-          onClick={handleHint}
-          disabled={isHintLoading}
-          className="text-[#c49a3a] disabled:opacity-50"
-        >
-          <IconBulb className="h-5 w-5" stroke={1.5} />
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleGiveUp}
+            disabled={isSending}
+            title="ギブアップする"
+            className="text-[#7a6a4a] disabled:opacity-50"
+          >
+            <IconFlag className="h-5 w-5" stroke={1.5} />
+          </button>
+          <button
+            type="button"
+            onClick={handleHint}
+            disabled={isHintLoading}
+            title="ヒント"
+            className="text-[#c49a3a] disabled:opacity-50"
+          >
+            <IconBulb className="h-5 w-5" stroke={1.5} />
+          </button>
+        </div>
       </header>
 
       <div className="shrink-0 border-b border-[#3d3020] bg-[#221c0e] p-4">
@@ -222,7 +246,7 @@ export default function PlayChat({
         </button>
         <button
           type="button"
-          onClick={handleAnswer}
+          onClick={() => setIsAnswerModalOpen(true)}
           disabled={isSending}
           title="真相を答える"
           className="rounded-[10px] border border-[#2d5030] bg-[#1d3020] px-3.5 py-2.5 text-[#5db870] disabled:opacity-60"
@@ -230,6 +254,42 @@ export default function PlayChat({
           <IconCheck className="h-4 w-4" stroke={1.5} />
         </button>
       </div>
+
+      {isAnswerModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-sm rounded-xl border border-[#3d3020] bg-[#1a1610] p-4">
+            <div className="mb-2 text-sm font-medium text-[#e8d5a0]">
+              真相を答える
+            </div>
+            <textarea
+              value={answerText}
+              onChange={(e) => setAnswerText(e.target.value)}
+              disabled={isSending}
+              autoFocus
+              className="min-h-[120px] w-full resize-none rounded-[10px] border border-[#3d3020] bg-[#221c0e] px-3 py-2.5 text-[13px] text-[#e8d5a0] placeholder:text-[#4a3f2a] disabled:opacity-60"
+              placeholder="真相だと思う内容を書いてください"
+            />
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setIsAnswerModalOpen(false)}
+                disabled={isSending}
+                className="flex-1 rounded-[10px] border border-[#3d3020] py-2.5 text-sm text-[#7a6a4a] disabled:opacity-60"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={handleAnswerSubmit}
+                disabled={isSending || !answerText.trim()}
+                className="flex-1 rounded-[10px] border border-[#2d5030] bg-[#1d3020] py-2.5 text-sm text-[#5db870] disabled:opacity-60"
+              >
+                回答する
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
