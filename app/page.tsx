@@ -8,7 +8,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-16">
-      <div className="flex w-full max-w-sm flex-col items-center gap-4 text-center">
+      <div className="flex w-full max-w-sm md:max-w-lg flex-col items-center gap-4 text-center">
         <IconFish className="h-12 w-12 text-[#c49a3a]" stroke={1.5} />
         <h1 className="text-2xl font-medium text-[#e8d5a0]">
           AI 海亀のスープ

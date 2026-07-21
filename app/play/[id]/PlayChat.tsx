@@ -138,7 +138,7 @@ export default function PlayChat({
   };
 
   return (
-    <div className="mx-auto flex h-dvh w-full max-w-sm flex-col">
+    <div className="mx-auto flex h-dvh w-full max-w-sm md:max-w-lg flex-col">
       <header className="flex shrink-0 items-center justify-between border-b border-[#3d3020] bg-[#1a1610] px-4 py-3">
         <div className="flex items-center gap-3 text-[#7a6a4a]">
           <Link href="/problems">
@@ -257,7 +257,7 @@ export default function PlayChat({
 
       {isAnswerModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-sm rounded-xl border border-[#3d3020] bg-[#1a1610] p-4">
+          <div className="w-full max-w-sm md:max-w-lg rounded-xl border border-[#3d3020] bg-[#1a1610] p-4">
             <div className="mb-2 text-sm font-medium text-[#e8d5a0]">
               真相を答える
             </div>
